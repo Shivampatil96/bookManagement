@@ -54,7 +54,7 @@ class BookService {
                 title: req.body.title,
                 author: req.body.author,
                 genre: req.body.genre,
-                image: req.body.image
+                img: req.body.img
             });
             try {
                 const dataToSave = yield newBook.save();

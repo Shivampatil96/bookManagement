@@ -6,17 +6,30 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.bookController = void 0;
 const express_1 = __importDefault(require("express"));
 const bookService_1 = require("../services/bookService");
-// import { authenticateToken, getToken } from '../service/AuthenticationService'
+const uuid_1 = require("uuid");
+const multer_1 = __importDefault(require("multer"));
 class BookController {
     constructor() {
         this.bookRoute = express_1.default.Router();
         this.mountRoutes();
     }
     mountRoutes() {
+        const uniqueId = (0, uuid_1.v4)();
+        const storage = multer_1.default.diskStorage({
+            destination: function (req, file, cb) {
+                cb(null, "./uploads");
+            },
+            filename: function (req, file, cb) {
+                cb(null, uniqueId + file.originalname);
+            },
+        });
+        const upload = (0, multer_1.default)({
+            storage: storage
+        });
         this.bookRoute.get('/getAllBooks', (req, res) => {
             (0, bookService_1.getAllBook)(req, res);
         });
-        this.bookRoute.post('/addBook', (req, res) => {
+        this.bookRoute.post('/addBook', upload.single('files'), (req, res) => {
             (0, bookService_1.addBook)(req, res);
         });
         this.bookRoute.delete('/deleteBook/:id', (req, res) => {

@@ -26,9 +26,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = __importDefault(require("express"));
+const express_1 = __importStar(require("express"));
 const mongoose = __importStar(require("mongoose"));
 const BookController_1 = require("./controller/BookController");
+const body_parser_1 = __importDefault(require("body-parser"));
 class App {
     // ******************* constructor Initilization ***************
     constructor() {
@@ -45,10 +46,10 @@ class App {
             res.header("Access-Control-Allow-Headers", "*");
             res.header("Access-Control-Allow-Methods", "GET, PUT, POST, PATCH,OPTIONS,DELETE");
             res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-            if (req.method == 'OPTIONS') {
-                // req.header('Access-Control-Allow-Methods', 'GET', 'POST', 'OPTIONS', 'DELETE');
-                // return res.status(200).json({});
-            }
+            // if (req.method == 'OPTIONS') {
+            //   req.header('Access-Control-Allow-Methods');
+            //   return res.status(200).json({});
+            // }
             next();
         });
     }
@@ -60,6 +61,9 @@ class App {
         mongoose.connect(url)
             .then(() => console.log('DB Connected successfully'))
             .catch((error) => console.error('connection error ', error));
+        this.express.use((0, express_1.urlencoded)({ extended: true }));
+        this.express.use(body_parser_1.default.json());
+        this.express.use(express_1.default.static('uploads'));
         this.express.use(express_1.default.json());
         this.express.use('/api', BookController_1.bookController);
         // return this.express.router

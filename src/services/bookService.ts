@@ -42,13 +42,15 @@ class BookService {
             res.status(400).json({ message: error.message })
         }
     }
+  
+     
 
     private async addNewBook(req: Request, res: Response) {
         const newBook = new Book({
             title: req.body.title,
             author: req.body.author,
             genre: req.body.genre,
-            image: req.body.image
+            img: req.body.img
         })
 
         try {

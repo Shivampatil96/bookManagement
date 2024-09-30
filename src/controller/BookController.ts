@@ -3,9 +3,9 @@ import { getAllBook, addBook, deleteBook, getBookById, updateBook } from '../ser
 import { NextFunction, Request, Response } from 'express';
 import { BookVo } from '../model/BookVo';
 import { Book } from '../model/model'
-
-
-// import { authenticateToken, getToken } from '../service/AuthenticationService'
+import { v4 as uuid } from 'uuid';
+import Multer from 'multer';
+import path from 'path';
 
 class BookController {
     public bookRoute: Router
@@ -17,11 +17,27 @@ class BookController {
 
     private mountRoutes(): void {
 
+        const uniqueId: string = uuid();
+
+        const storage = Multer.diskStorage({
+            destination: function (req: Request, file, cb) {
+                cb(null, "./uploads");
+            },
+            filename: function (req: Request, file, cb) {
+                cb(null, uniqueId + file.originalname);
+            },
+        });
+
+
+        const upload = Multer({
+            storage:storage
+        });
+
         this.bookRoute.get('/getAllBooks', (req: Request, res: Response) => {
             getAllBook(req, res);
         })
 
-        this.bookRoute.post('/addBook', (req: Request, res: Response) => {
+        this.bookRoute.post('/addBook',upload.single('files'), (req: Request, res: Response) => {
             addBook(req, res);
         })
 
@@ -30,7 +46,7 @@ class BookController {
         })
 
         this.bookRoute.patch('/updateBook/:id', (req: Request, res: Response) => {
-            updateBook(req,res);
+            updateBook(req, res);
         })
         this.bookRoute.get('/getBook/:id', (req: Request, res: Response) => {
             getBookById(req, res);
